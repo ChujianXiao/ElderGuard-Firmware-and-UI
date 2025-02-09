@@ -1,4 +1,4 @@
-# ElderlGuard Health Monitoring Smartwatch
+# ElderGuard Health Monitoring Smartwatch
 
 ### Overview
 
