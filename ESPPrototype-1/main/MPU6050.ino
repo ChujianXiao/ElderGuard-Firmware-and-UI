@@ -16,34 +16,33 @@ void initMPU6050() {
   Serial.println("MPU6050 initialized.");
 }
 
-void readMPU6050(lv_timer_t *timerUI) {
+void readMPU6050(int mpuData[2]) {
   mpu6050.update();
 
-  if (millis() - timer > 1000) {
-    Serial.print("\tAcceleration Y: ");
-    Serial.print(mpu6050.getAccY());
-    timer = millis(); // Reset the timer
-  }
-
-  if (abs(mpu6050.getAccY()) > 0.05) {
+  if (abs(mpu6050.getAccY()) > 0.2) {
     steps += 1;
     delay(350); // Prevent double-counting of steps
   }
-
   distance = steps * distanceinonestep / 100; // Calculate distance in meters
+
+  mpuData[0] = steps;
+  mpuData[1] = distance;
+}
+
+void updateUI_MPU6050(lv_timer_t *timer) {
+  //Fetch the latest BMP280 data
+  if (xSemaphoreTake(dataMutex, portMAX_DELAY)) {
+      float steps = latestSensorData.mpu6050Data[0]; // latestSensorData intialized in main.ino
+      int distance = latestSensorData.mpu6050Data[1];
+      xSemaphoreGive(dataMutex);  //Release the mutex
+  }
 
   // Update the UI
   char buf[16];
-  snprintf(buf, sizeof(buf), "%d", distance);
-  lv_label_set_text(ui_Distance, buf); // ui_Distance is defined in ui.c
+  snprintf(buf, sizeof(buf), "%.1f℃", steps);
+  lv_label_set_text(ui_Steps, buf); // ui_BodyTemp is defined in ui.c
 
   char buf2[16];
-  snprintf(buf2, sizeof(buf2), "%d", steps);
-  lv_label_set_text(ui_Steps, buf2); // ui_Steps is defined in ui.c
-
-  Serial.print("Steps: ");
-  Serial.println(steps);
-
-  Serial.print("Distance: ");
-  Serial.println(distance,2); // Print distance with 2 decimal places
+  snprintf(buf2, sizeof(buf2), "%d", distance);
+  lv_label_set_text(ui_Distance, buf2); // Didn't change UI element to altitude yet, placeholder
 }

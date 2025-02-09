@@ -18,12 +18,27 @@ void initMAX3010() {
   particleSensor.setup(60, 4, 2, 100, 411, 4096);
 }
 
-void readMAX3010(lv_timer_t *timer) {
+//TO BE DONE -- ALGORITHM NEEDS TO BE UPDATED FOR EFFICIENCY PURPOSES
+void readMAX3010(int maxData[2]) {
   for (byte i = 0; i < 100; i++) {
-    while (!particleSensor.available()) particleSensor.check();
+    while (!particleSensor.available()) particleSensor.check(); //This part is taking up too much runtime
     redBuffer[i] = particleSensor.getRed();
     irBuffer[i] = particleSensor.getIR();
     particleSensor.nextSample();
+  }
+  //Use algorithm from library
+  maxim_heart_rate_and_oxygen_saturation(irBuffer, 100, redBuffer, &spo2, &validSPO2, &heartRate, &validHeartRate);
+  
+  maxData[0] = heartRate;
+  maxData[1] = spo2;
+}
+
+void updateUI_MAX3010(lv_timer_t *timer) {
+  //Fetch the latest BMP280 data
+  if (xSemaphoreTake(dataMutex, portMAX_DELAY)) {
+      int heartRate = latestSensorData.max3010Data[0]; // latestSensorData intialized in main.ino
+      int spo2 = latestSensorData.max3010Data[1];
+      xSemaphoreGive(dataMutex);  //Release the mutex
   }
 
   // Update the UI
@@ -34,11 +49,4 @@ void readMAX3010(lv_timer_t *timer) {
   char buf2[16];
   snprintf(buf2, sizeof(buf2), "%d", spo2);
   lv_label_set_text(ui_BloodOxygen, buf2); // ui_BloodOxygen is defined in ui.c
-
-  maxim_heart_rate_and_oxygen_saturation(irBuffer, 100, redBuffer, &spo2, &validSPO2, &heartRate, &validHeartRate);
-  Serial.print("Heart Rate: ");
-  Serial.print(heartRate);
-  Serial.print(" bpm, SpO2: ");
-  Serial.print(spo2);
-  Serial.println("%");
 }

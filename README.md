@@ -37,12 +37,14 @@ This project focuses on developing a **smartwatch** designed primarily for **mon
 ---
 
 ## Versions
-Current version: **v2.0**
+Current version: **v2.1**
 
 ### Version History
 - **v1.0** - Implemented system on STM32 Microcontroller, successfully ran UI and connected sensors.
 
 - **v2.0** - Migrated to ESP32 Microcontroller for its on-chip Wi-FI functionality, created seperate folder.
+
+- **v2.1** - Implemented FreeRTOS, seperated tasks for sensors, UI and Wi-Fi. Sensors now read data to global variable, which can be accessed by the UI.
 
 
 

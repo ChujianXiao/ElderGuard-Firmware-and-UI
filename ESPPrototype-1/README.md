@@ -19,3 +19,21 @@ This folder contains the firmware for the ESP32 microcontroller, responsible for
 
 ## Software Requirements
 - **Toolchain:** Arduino IDE
+
+## Versions
+Current version: **v2.1**
+
+### Version History
+- **v2.0** - Migrated to ESP32 Microcontroller for its on-chip Wi-FI functionality, created seperate folder.
+
+- **v2.1** - Implemented FreeRTOS, separated tasks for sensors, UI and Wi-Fi. Sensors now read data to global variable, which can be accessed by the UI.
+    - Created semaphores to manage global data access
+    - Introduced new sensor, the BMP280, to calculate the temperature and altitude
+    - Added HTTP Client
+    - Fixed majority of bugs related to new RTOS implementation
+    - Removed some unused libraries
+
+## To Be Done
+- Re-implement MAX3010 algorithm, as current one has too much downtime
+- Create task to send data to the backend
+- UI updating is currently done in one function. Consider separating into dynamic UI and static UI to update separately, which can save power.

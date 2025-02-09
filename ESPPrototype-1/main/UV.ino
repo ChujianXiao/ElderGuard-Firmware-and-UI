@@ -1,23 +1,8 @@
+#define UV_SENSOR_PIN 4 // GPIO04
+
+// Initialize the UV sensor pin
 void initUVSensor() {
-  // No specific initialization required for analog UV sensor
-  Serial.println("UV sensor initialized.");
-}
-
-void readUVSensor(lv_timer_t *timer) {
-  int sensorValue = analogRead(A0); // Assuming UV sensor is connected to analog pin A0
-  float voltage = sensorValue * (3.3 / 1023.0); // Convert sensor value to voltage
-  int uvIndex = getUVIndex(voltage);
-
-  // Update the UI
-  char buf[32];
-  snprintf(buf, sizeof(buf), "%d Lvl", uvIndex);
-  lv_label_set_text(ui_UVRays, buf); // ui_UVRays is defined in ui.c
-
-  Serial.print("UV Index: ");
-  Serial.print(uvIndex);
-  Serial.print(", Voltage: ");
-  Serial.print(voltage, 3);
-  Serial.println(" V");
+  pinMode(UV_SENSOR_PIN, INPUT);
 }
 
 int getUVIndex(float voltage) {
@@ -34,3 +19,29 @@ int getUVIndex(float voltage) {
   else if (voltage < 1.079) return 10;
   else return 11; // UV index beyond 10
 }
+
+void readUVSensor(float uvData[2]) {
+  int sensorValue = 0;
+
+  sensorValue = analogRead(UV_SENSOR_PIN);
+
+  float voltage = sensorValue * (3.3 / 1023.0); // Convert sensor value to voltage
+  uvData[0] = voltage;
+  uvData[1] = getUVIndex(voltage);
+}
+
+void updateUI_UVSensor(lv_timer_t *timer) {
+  //Fetch the latest UV sensor data
+  int uvIndex = 0;
+  if (xSemaphoreTake(dataMutex, portMAX_DELAY)) {
+      uvIndex = (int)latestSensorData.uvData[1]; // latestSensorData intialized in main.ino
+      xSemaphoreGive(dataMutex);  // Release the mutex
+  }
+
+  //Update the UI
+  char buf[32];
+  snprintf(buf, sizeof(buf), "UV Level: %d", uvIndex);
+  lv_label_set_text(ui_UVRays, buf);
+}
+
+
