@@ -1,4 +1,4 @@
-# Elderly Health Monitoring Smartwatch
+# ElderGuard Health Monitoring Smartwatch
 
 ### Overview
 
@@ -29,18 +29,22 @@ This project focuses on developing a **smartwatch** designed primarily for **mon
 
 ---
 
-### How to use docker?
+## Authors
+### Main Contributors to Current Repo
+- **Haochen Qin** - Sensor Integration and Wi-Fi Connectivity
+- **Chujian Xiao** - UI/UX design
 
-docker build -t lvgl .
+---
 
-docker run -it --rm -e DISPLAY=YourOwnIP:0 -e XDG_RUNTIME_DIR=/tmp -v /tmp/.X11-unix:/tmp/.X11-unix lvgl
+## Versions
+Current version: **v2.1**
 
-*Make sure to change the IP to your host device for the docker run command
+### Version History
+- **v1.0** - Implemented system on STM32 Microcontroller, successfully ran UI and connected sensors.
 
-IMPORTANT: Install VcXsrv
+- **v2.0** - Migrated to ESP32 Microcontroller for its on-chip Wi-FI functionality, created seperate folder.
 
-1. Set the display number to 0
+- **v2.1** - Implemented FreeRTOS, seperated tasks for sensors, UI and Wi-Fi. Sensors now read data to global variable, which can be accessed by the UI.
 
-2. Start no client
 
-3. Disable access control
+
