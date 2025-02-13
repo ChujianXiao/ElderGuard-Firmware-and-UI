@@ -7,11 +7,12 @@
 #include <TFT_eSPI.h>
 #include <ui.h>
 
+
 // Task prototypes
 void SensorTask(void *pvParameters);
 void WiFiTask(void *pvParameters);
 void UITask(void *pvParameters);
-//void BackendTask(void *pvParameters); //Not implemented yet
+void BackendTask(void *pvParameters); 
 
 // Declare struct to store sensor's data
 typedef struct {
@@ -61,7 +62,9 @@ void setup() {
     NULL  // Task handle is not used here
   );
   xTaskCreate(UITask, "UI Task", 4000, NULL, 1, NULL);
+  xTaskCreate(BackendTask, "Backend Task", 8000, NULL, 1, NULL);
   //xTaskCreate(WiFiTask, "Wifi Task", 200, NULL, 1, NULL);
+;
 }
 
 void loop() {
@@ -118,5 +121,17 @@ void WiFiTask(void *pvParameters) {
     }
     //Run every 3000 ms
     vTaskDelay(3000 / portTICK_PERIOD_MS);
+  }
+}
+
+void BackendTask(void *pvParameters) {
+  for (;;) {
+    //Send sensor data to the backend
+    if (WiFi.status() == WL_CONNECTED) {
+      Serial.println("Sending sensor data to the backend...");
+      sendSensorData(latestSensorData);    
+    }
+    //Run every 5000 ms
+    vTaskDelay(5000 / portTICK_PERIOD_MS);
   }
 }
