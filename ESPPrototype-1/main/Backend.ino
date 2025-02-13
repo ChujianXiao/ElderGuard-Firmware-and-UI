@@ -7,7 +7,7 @@ const char* ssid = "uOttawa Trash";
 const char* password = "meiyoumima";
 
 // Replace with your server URL (including the appropriate port and path)
-//const char* serverUrl = "http://yourserver.com/api/sensordata";
+const char* serverUrl = " http://localhost:3001";
 
 // Declare struct to store sensor's data
 typedef struct {
