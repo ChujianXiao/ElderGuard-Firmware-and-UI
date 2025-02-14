@@ -11,7 +11,7 @@
 void SensorTask(void *pvParameters);
 void WiFiTask(void *pvParameters);
 void UITask(void *pvParameters);
-//void BackendTask(void *pvParameters); //Not implemented yet
+void BackendTask(void *pvParameters);
 
 // Declare struct to store sensor's data
 typedef struct {
@@ -26,6 +26,8 @@ typedef struct {
 SensorData latestSensorData;
 SemaphoreHandle_t dataMutex; //We need a mutex for this variable as multiple tasks could be accessing at same time
 
+char macStr[18];  // Buffer for MAC address string
+
 void setup() {
   Serial.begin(115200);
   Wire.begin(8,9); //I2C Ports defined at 8 and 9
@@ -33,6 +35,13 @@ void setup() {
   //Initialize Wi-Fi
   //WARNING !!! Sensors will not be initialized until WiFi connected, can bypass this function for testing
   //setupWiFi();
+
+  //Get the mac address
+  uint8_t mac[6];
+  WiFi.macAddress(mac);
+  snprintf(macStr, sizeof(macStr), "%02X:%02X:%02X:%02X:%02X:%02X",mac[0], mac[1], mac[2], mac[3], mac[4], mac[5]);
+  Serial.print("Stored MAC Address: ");
+  Serial.println(macStr);
 
   //Initialize all sensors
   initGY511();
@@ -62,6 +71,7 @@ void setup() {
   );
   xTaskCreate(UITask, "UI Task", 4000, NULL, 1, NULL);
   //xTaskCreate(WiFiTask, "Wifi Task", 200, NULL, 1, NULL);
+  xTaskCreate(BackendTask, "Backend Task", 4000, NULL, 1, NULL);
 }
 
 void loop() {
@@ -118,5 +128,18 @@ void WiFiTask(void *pvParameters) {
     }
     //Run every 3000 ms
     vTaskDelay(3000 / portTICK_PERIOD_MS);
+  }
+}
+
+
+void BackendTask(void *pvParameters) {
+  for (;;) {
+    //Lock the mutex before accessing the global variable
+    if (xSemaphoreTake(dataMutex, portMAX_DELAY)) {
+        sendSensorData(latestSensorData);
+        xSemaphoreGive(dataMutex);  // Release the mutex
+    }
+    //Run every 5000 ms
+    vTaskDelay(5000 / portTICK_PERIOD_MS);
   }
 }
