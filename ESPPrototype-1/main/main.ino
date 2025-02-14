@@ -34,7 +34,7 @@ void setup() {
 
   //Initialize Wi-Fi
   //WARNING !!! Sensors will not be initialized until WiFi connected, can bypass this function for testing
-  //setupWiFi();
+  setupWiFi();
 
   //Get the mac address
   uint8_t mac[6];
@@ -70,8 +70,8 @@ void setup() {
     NULL  // Task handle is not used here
   );
   xTaskCreate(UITask, "UI Task", 4000, NULL, 1, NULL);
-  //xTaskCreate(WiFiTask, "Wifi Task", 200, NULL, 1, NULL);
-  xTaskCreate(BackendTask, "Backend Task", 4000, NULL, 1, NULL);
+  xTaskCreate(WiFiTask, "Wifi Task", 4000, NULL, 1, NULL);
+  xTaskCreate(BackendTask, "Backend Task", 8000, NULL, 1, NULL);
 }
 
 void loop() {
@@ -98,8 +98,8 @@ void SensorTask(void *pvParameters) {
 
   //check how much space is left in the stack
     UBaseType_t stackLeft = uxTaskGetStackHighWaterMark(NULL);
-    Serial.print("Sensor task stack high water mark: ");
-    Serial.println(stackLeft);
+    //Serial.print("Sensor task stack high water mark: ");
+    //Serial.println(stackLeft);
 
     //Reading interval
     vTaskDelay(500 / portTICK_PERIOD_MS);
@@ -112,8 +112,8 @@ void UITask(void *pvParameters) {
 
     //check how much space is left in the stack
     UBaseType_t stackLeft = uxTaskGetStackHighWaterMark(NULL);
-    Serial.print("UI task stack high water mark: ");
-    Serial.println(stackLeft);
+    //Serial.print("UI task stack high water mark: ");
+    //Serial.println(stackLeft);
 
     //Run every 50 ms
     vTaskDelay(50 / portTICK_PERIOD_MS);

@@ -2,7 +2,7 @@
 #include <HTTPClient.h>
 #include <ArduinoJson.h>
 
-const char* serverUrl = "http://localhost:3001";
+const char* serverUrl = "http://192.168.2.10:3001/api/sensors";
 
 void sendSensorData(SensorData sensorData) {
     if (WiFi.status() == WL_CONNECTED) {
