@@ -70,10 +70,10 @@ void setup() {
     ,
     NULL  // Task handle is not used here
   );
-  xTaskCreate(MAX3010Task, "MAX3010 Task", 4000, NULL, 1, NULL);
-  xTaskCreate(UITask, "UI Task", 4000, NULL, 1, NULL);
+  xTaskCreate(MAX3010Task, "MAX3010 Task", 2000, NULL, 1, NULL);
+  xTaskCreate(UITask, "UI Task", 3500, NULL, 1, NULL);
   xTaskCreate(WiFiTask, "Wifi Task", 4000, NULL, 1, NULL);
-  xTaskCreate(BackendTask, "Backend Task", 8000, NULL, 1, NULL);
+  xTaskCreate(BackendTask, "Backend Task", 4500, NULL, 1, NULL);
 }
 
 void loop() {
@@ -93,7 +93,13 @@ void SensorTask(void *pvParameters) {
 
     //Lock the mutex before updating the global variable
     if (xSemaphoreTake(dataMutex, portMAX_DELAY)) {
-        latestSensorData = data;
+        //use memcpy for arrays
+        memcpy(latestSensorData.uvData, data.uvData, sizeof(data.uvData));
+        memcpy(latestSensorData.bmp280Data, data.bmp280Data, sizeof(data.bmp280Data));
+        memcpy(latestSensorData.mpu6050Data, data.mpu6050Data, sizeof(data.mpu6050Data));
+
+        latestSensorData.gy511Data = data.gy511Data;
+
         xSemaphoreGive(dataMutex);  // Release the mutex
     }
 
@@ -116,7 +122,7 @@ void MAX3010Task(void *pvParameters) {
 
     //Lock the mutex before updating the global variable
     if (xSemaphoreTake(dataMutex, portMAX_DELAY)) {
-        latestSensorData = data;
+        memcpy(latestSensorData.max3010Data, data.max3010Data, sizeof(data.max3010Data));
         xSemaphoreGive(dataMutex);  // Release the mutex
     }
 

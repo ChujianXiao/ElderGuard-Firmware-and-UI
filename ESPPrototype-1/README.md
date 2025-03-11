@@ -21,10 +21,10 @@ This folder contains the firmware for the ESP32 microcontroller, responsible for
 - **Toolchain:** Arduino IDE
 
 ## Versions
-Current version: **v2.1**
+Current version: **v2.2.1**
 
 ### Version History
-- **v2.0** - Migrated to ESP32 Microcontroller for its on-chip Wi-FI functionality, created seperate folder.
+- **v2.0** - Migrated to ESP32 Microcontroller for its on-chip Wi-FI functionality, created separate folder.
 
 - **v2.1** - Implemented FreeRTOS, separated tasks for sensors, UI and Wi-Fi. Sensors now read data to global variable, which can be accessed by the UI.
     - Created semaphores to manage global data access
@@ -33,7 +33,13 @@ Current version: **v2.1**
     - Fixed majority of bugs related to new RTOS implementation
     - Removed some unused libraries
 
+- **v2.2** - Created the Backend Task to send the sensor data to the databse
+    - The backend task uses an HTTP post to send a JSON package, which is received by the database.
+
+- **v2.2.1** - Updated MAX3010 algorithm and created a separate task, as the previous implementation was blocking all the other sensors from updating and all the other tasks from running.
+    - MAX3010 now updates the global variable in a separate task.
+    - As the MAX3010 takes a long time to read all the 100 samples that it requires, we poll it occasionally and only update the buffer if there is new data. If there is no new data, we block the task for a few milliseconds so that other tasks can run instead.
+
 ## To Be Done
-- Re-implement MAX3010 algorithm, as current one has too much downtime
-- Create task to send data to the backend
+- Create function to update time in the UI.
 - UI updating is currently done in one function. Consider separating into dynamic UI and static UI to update separately, which can save power.

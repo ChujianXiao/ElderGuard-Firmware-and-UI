@@ -20,30 +20,37 @@ void initMAX3010() {
 
 //TO BE DONE -- ALGORITHM NEEDS TO BE UPDATED FOR EFFICIENCY PURPOSES
 void readMAX3010(int maxData[2]) {
-
   int sampleCount = 0;
+  const int totalSamples = 100;
   int roundStartSample = 0;
 
-  while (sampleCount < 100) {
-      // Check how many samples are available in the sensor's FIFO buffer
+  while (sampleCount < totalSamples) {
+      //Check how many samples are available in the sensor's FIFO buffer
       roundStartSample = sampleCount;
+      //Loop to read all samples currently available in the FIFO
       while (particleSensor.available()) {
           redBuffer[sampleCount] = particleSensor.getRed();
           irBuffer[sampleCount] = particleSensor.getIR();
           particleSensor.nextSample();
           sampleCount++;
 
-          if (sampleCount >= 100) break; // Stop when 100 samples are collected
+          if (sampleCount >= totalSamples)
+              break;  // Stop once we have collected 100 samples
       }
 
       //Testing: see how many samples are collected per round
-      Serial.print("MAX3010 Sample Count Per Round:");
       int numSamples = sampleCount - roundStartSample;
-      Serial.println(numSamples);
+      if(numSamples > 0){
+        Serial.print("MAX3010 Sample Count Per Round:");
+        Serial.println(numSamples);
+        Serial.print("Total Sample Count:");
+        Serial.println(sampleCount);
+      }
 
-      // If we haven't collected enough samples, wait briefly and check again
-      if (sampleCount < 100) {
-          vTaskDelay(pdMS_TO_TICKS(10));  // Small delay before checking again
+      //If we haven't collected enough samples, check again after a short delay
+      if (sampleCount < totalSamples) {
+          particleSensor.check();  // Update sensor state
+          vTaskDelay(pdMS_TO_TICKS(30));  // Yield to allow other tasks to run
       }
   }
 

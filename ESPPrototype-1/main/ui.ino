@@ -174,11 +174,19 @@ void updateUI(lv_timer_t *timer)
   lv_label_set_text(ui_Compass, buf); // ui_Compass is defined in ui.c
 
   //Heart Rate update
-  snprintf(buf, sizeof(buf), "%d", heartRate);
+  if(heartRate > 0){
+    snprintf(buf, sizeof(buf), "%d", heartRate);
+  }else{
+    snprintf(buf, sizeof(buf), "N/A");
+  }
   lv_label_set_text(ui_HeartRate, buf); // ui_HeartRate is defined in ui.c
 
   //SPO2 update
-  snprintf(buf, sizeof(buf), "%d%%", spo2);
+  if(spo2 > 0){
+    snprintf(buf, sizeof(buf), "%d%%", spo2);
+  }else{
+    snprintf(buf, sizeof(buf), "N/A");
+  }
   lv_label_set_text(ui_BloodOxygen, buf); // ui_BloodOxygen is defined in ui.c
 }
 
