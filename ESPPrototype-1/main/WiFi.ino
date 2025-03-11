@@ -1,8 +1,11 @@
 #include <WiFi.h>
 
 // Replace with your Wi-Fi credentials
-const char* ssid = "uOttawa Trash";
+const char* ssid = "uOttawa";
 const char* password = "meiyoumima";
+
+IPAddress serverIP;
+const char* server = "https://api.peakxel.net"; 
 
 void setupWiFi() {
   Serial.print("Connecting to Wi-Fi: ");
@@ -20,4 +23,12 @@ void setupWiFi() {
   Serial.println("Wi-Fi connected!");
   Serial.print("IP Address: ");
   Serial.println(WiFi.localIP());
+
+  // Check Cloudflare proxy IP resolution
+  if (WiFi.hostByName(server, serverIP)) {
+        Serial.print("Resolved Direct Server IP: ");
+        Serial.println(serverIP);
+    } else {
+        Serial.println("[ERROR] Direct Server DNS Resolution Failed!");
+    }
 }

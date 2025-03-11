@@ -9,6 +9,7 @@
 
 // Task prototypes
 void SensorTask(void *pvParameters);
+void MAX3010Task(void *pvParameters);
 void WiFiTask(void *pvParameters);
 void UITask(void *pvParameters);
 void BackendTask(void *pvParameters);
@@ -69,9 +70,10 @@ void setup() {
     ,
     NULL  // Task handle is not used here
   );
-  xTaskCreate(UITask, "UI Task", 4000, NULL, 1, NULL);
+  xTaskCreate(MAX3010Task, "MAX3010 Task", 2000, NULL, 1, NULL);
+  xTaskCreate(UITask, "UI Task", 3500, NULL, 1, NULL);
   xTaskCreate(WiFiTask, "Wifi Task", 4000, NULL, 1, NULL);
-  xTaskCreate(BackendTask, "Backend Task", 8000, NULL, 1, NULL);
+  xTaskCreate(BackendTask, "Backend Task", 4500, NULL, 1, NULL);
 }
 
 void loop() {
@@ -88,21 +90,49 @@ void SensorTask(void *pvParameters) {
     readBMP280(data.bmp280Data);
     readMPU6050(data.mpu6050Data);
     readGY511(&data.gy511Data); //Only float (not array) for gy511, so to pass by reference we need a pointer
-    //readMAX3010(data.max3010Data); //MAX3010 algorithm needs to be re-implemented, as current one takes up too much runtime
 
     //Lock the mutex before updating the global variable
     if (xSemaphoreTake(dataMutex, portMAX_DELAY)) {
-        latestSensorData = data;
+        //use memcpy for arrays
+        memcpy(latestSensorData.uvData, data.uvData, sizeof(data.uvData));
+        memcpy(latestSensorData.bmp280Data, data.bmp280Data, sizeof(data.bmp280Data));
+        memcpy(latestSensorData.mpu6050Data, data.mpu6050Data, sizeof(data.mpu6050Data));
+
+        latestSensorData.gy511Data = data.gy511Data;
+
         xSemaphoreGive(dataMutex);  // Release the mutex
     }
 
   //check how much space is left in the stack
     UBaseType_t stackLeft = uxTaskGetStackHighWaterMark(NULL);
-    //Serial.print("Sensor task stack high water mark: ");
-    //Serial.println(stackLeft);
+    Serial.print("Sensor task stack high water mark: ");
+    Serial.println(stackLeft);
 
     //Reading interval
     vTaskDelay(500 / portTICK_PERIOD_MS);
+  }
+}
+
+// Seperate task to read MAX3010. As reading from this sensor takes a long time, we don't want to block the other sensors.
+void MAX3010Task(void *pvParameters) {
+  for (;;) {
+    SensorData data;
+    
+    readMAX3010(data.max3010Data); //MAX3010 algorithm needs to be re-implemented, as current one takes up too much runtime
+
+    //Lock the mutex before updating the global variable
+    if (xSemaphoreTake(dataMutex, portMAX_DELAY)) {
+        memcpy(latestSensorData.max3010Data, data.max3010Data, sizeof(data.max3010Data));
+        xSemaphoreGive(dataMutex);  // Release the mutex
+    }
+
+  //check how much space is left in the stack
+    UBaseType_t stackLeft = uxTaskGetStackHighWaterMark(NULL);
+    Serial.print("MAX3010 task stack high water mark: ");
+    Serial.println(stackLeft);
+
+    //Reading interval
+    vTaskDelay(1000 / portTICK_PERIOD_MS);
   }
 }
 
@@ -112,8 +142,8 @@ void UITask(void *pvParameters) {
 
     //check how much space is left in the stack
     UBaseType_t stackLeft = uxTaskGetStackHighWaterMark(NULL);
-    //Serial.print("UI task stack high water mark: ");
-    //Serial.println(stackLeft);
+    Serial.print("UI task stack high water mark: ");
+    Serial.println(stackLeft);
 
     //Run every 50 ms
     vTaskDelay(50 / portTICK_PERIOD_MS);
@@ -139,7 +169,31 @@ void BackendTask(void *pvParameters) {
         sendSensorData(latestSensorData);
         xSemaphoreGive(dataMutex);  // Release the mutex
     }
+
+    //check how much space is left in the stack
+    UBaseType_t stackLeft = uxTaskGetStackHighWaterMark(NULL);
+    Serial.print("Backend task stack high water mark: ");
+    Serial.println(stackLeft);
+
     //Run every 5000 ms
     vTaskDelay(5000 / portTICK_PERIOD_MS);
   }
+}
+
+//Helper function to determine how long the tasks take to run
+void printTaskStats() {
+    TaskStatus_t taskStatusArray[10];  // Adjust size based on the number of tasks
+    UBaseType_t taskCount;
+    uint32_t totalRunTime;
+
+    taskCount = uxTaskGetSystemState(taskStatusArray, 10, &totalRunTime);
+
+    Serial.println("Task Execution Times:");
+    for (UBaseType_t i = 0; i < taskCount; i++) {
+        Serial.print("Task: ");
+        Serial.print(taskStatusArray[i].pcTaskName);
+        Serial.print(" - Run Time: ");
+        Serial.print(taskStatusArray[i].ulRunTimeCounter);
+        Serial.println(" ticks");
+    }
 }

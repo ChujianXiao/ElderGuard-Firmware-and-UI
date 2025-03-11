@@ -32,7 +32,8 @@ This project focuses on developing a **smartwatch** designed primarily for **mon
 ## Authors
 ### Main Contributors to Current Repo
 - **Haochen Qin** - Sensor Integration and Wi-Fi Connectivity
-- **Chujian Xiao** - UI/UX design
+- **Chujian Xiao** - UI/UX design and RTOS Implementation
+- **Kuanyu Chang** - Designed Task to Send Sensor Data to Database
 
 ---
 
@@ -40,11 +41,16 @@ This project focuses on developing a **smartwatch** designed primarily for **mon
 Current version: **v2.1**
 
 ### Version History
+- **Please view the README file in the ESPPrototype-1 folder for a detailed version history of the ESP32 firmware!**
 - **v1.0** - Implemented system on STM32 Microcontroller, successfully ran UI and connected sensors.
 
-- **v2.0** - Migrated to ESP32 Microcontroller for its on-chip Wi-FI functionality, created seperate folder.
+- **v2.0** - Migrated to ESP32 Microcontroller for its on-chip Wi-FI functionality, created separate folder.
 
 - **v2.1** - Implemented FreeRTOS, seperated tasks for sensors, UI and Wi-Fi. Sensors now read data to global variable, which can be accessed by the UI.
+
+- **v2.2** - Created the Backend Task to send the sensor data to the databse
+
+- **v2.2.1** - Updated MAX3010 algorithm and created a separate task, as the previous implementation was blocking all the other sensors from updating and all the other tasks from running.
 
 
 

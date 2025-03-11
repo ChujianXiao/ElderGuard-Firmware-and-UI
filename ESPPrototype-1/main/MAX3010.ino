@@ -20,12 +20,40 @@ void initMAX3010() {
 
 //TO BE DONE -- ALGORITHM NEEDS TO BE UPDATED FOR EFFICIENCY PURPOSES
 void readMAX3010(int maxData[2]) {
-  for (byte i = 0; i < 100; i++) {
-    while (!particleSensor.available()) particleSensor.check(); //This part is taking up too much runtime
-    redBuffer[i] = particleSensor.getRed();
-    irBuffer[i] = particleSensor.getIR();
-    particleSensor.nextSample();
+  int sampleCount = 0;
+  const int totalSamples = 100;
+  int roundStartSample = 0;
+
+  while (sampleCount < totalSamples) {
+      //Check how many samples are available in the sensor's FIFO buffer
+      roundStartSample = sampleCount;
+      //Loop to read all samples currently available in the FIFO
+      while (particleSensor.available()) {
+          redBuffer[sampleCount] = particleSensor.getRed();
+          irBuffer[sampleCount] = particleSensor.getIR();
+          particleSensor.nextSample();
+          sampleCount++;
+
+          if (sampleCount >= totalSamples)
+              break;  // Stop once we have collected 100 samples
+      }
+
+      //Testing: see how many samples are collected per round
+      int numSamples = sampleCount - roundStartSample;
+      if(numSamples > 0){
+        Serial.print("MAX3010 Sample Count Per Round:");
+        Serial.println(numSamples);
+        Serial.print("Total Sample Count:");
+        Serial.println(sampleCount);
+      }
+
+      //If we haven't collected enough samples, check again after a short delay
+      if (sampleCount < totalSamples) {
+          particleSensor.check();  // Update sensor state
+          vTaskDelay(pdMS_TO_TICKS(30));  // Yield to allow other tasks to run
+      }
   }
+
   //Use algorithm from library
   maxim_heart_rate_and_oxygen_saturation(irBuffer, 100, redBuffer, &spo2, &validSPO2, &heartRate, &validHeartRate);
   
