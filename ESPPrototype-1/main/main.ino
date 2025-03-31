@@ -44,6 +44,9 @@ void setup() {
   Serial.print("Stored MAC Address: ");
   Serial.println(macStr);
 
+  //Sync the RTC with NTP server
+  setSystemTime();
+
   //Initialize all sensors
   initGY511();
   delay(500);
@@ -104,9 +107,11 @@ void SensorTask(void *pvParameters) {
     }
 
   //check how much space is left in the stack
+  /*
     UBaseType_t stackLeft = uxTaskGetStackHighWaterMark(NULL);
     Serial.print("Sensor task stack high water mark: ");
     Serial.println(stackLeft);
+  */
 
     //Reading interval
     vTaskDelay(500 / portTICK_PERIOD_MS);
@@ -127,9 +132,11 @@ void MAX3010Task(void *pvParameters) {
     }
 
   //check how much space is left in the stack
+  /*
     UBaseType_t stackLeft = uxTaskGetStackHighWaterMark(NULL);
     Serial.print("MAX3010 task stack high water mark: ");
     Serial.println(stackLeft);
+  */
 
     //Reading interval
     vTaskDelay(1000 / portTICK_PERIOD_MS);
@@ -141,9 +148,11 @@ void UITask(void *pvParameters) {
     lv_task_handler();
 
     //check how much space is left in the stack
+    /*
     UBaseType_t stackLeft = uxTaskGetStackHighWaterMark(NULL);
     Serial.print("UI task stack high water mark: ");
     Serial.println(stackLeft);
+    */
 
     //Run every 50 ms
     vTaskDelay(50 / portTICK_PERIOD_MS);
@@ -156,8 +165,8 @@ void WiFiTask(void *pvParameters) {
         Serial.println("Wi-Fi disconnected! Reconnecting...");
         setupWiFi();
     }
-    //Run every 3000 ms
-    vTaskDelay(3000 / portTICK_PERIOD_MS);
+    //Run every 10000 ms
+    vTaskDelay(10000 / portTICK_PERIOD_MS);
   }
 }
 

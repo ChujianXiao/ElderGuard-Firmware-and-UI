@@ -19,7 +19,6 @@ lv_obj_t * ui_BloodOxygen;
 lv_obj_t * ui_BodyTempImage;
 lv_obj_t * ui_BodyTemp;
 lv_obj_t * ui_Time;
-lv_obj_t * ui_TimeSeconds;
 lv_obj_t * ui_Bar1;
 lv_obj_t * ui_Power;
 lv_obj_t * ui_ChargingImage;

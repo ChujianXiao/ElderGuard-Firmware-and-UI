@@ -83,15 +83,6 @@ void ui_Screen1_screen_init(void)
     lv_label_set_text(ui_Time, "12:00");
     lv_obj_set_style_text_font(ui_Time, &ui_font_RobotoBIG, LV_PART_MAIN | LV_STATE_DEFAULT);
 
-    ui_TimeSeconds = lv_label_create(ui_Screen1);
-    lv_obj_set_width(ui_TimeSeconds, LV_SIZE_CONTENT);   /// 1
-    lv_obj_set_height(ui_TimeSeconds, LV_SIZE_CONTENT);    /// 1
-    lv_obj_set_x(ui_TimeSeconds, 70);
-    lv_obj_set_y(ui_TimeSeconds, 46);
-    lv_obj_set_align(ui_TimeSeconds, LV_ALIGN_CENTER);
-    lv_label_set_text(ui_TimeSeconds, "00");
-    lv_obj_set_style_text_font(ui_TimeSeconds, &ui_font_RobotoMedium, LV_PART_MAIN | LV_STATE_DEFAULT);
-
     ui_Bar1 = lv_bar_create(ui_Screen1);
     lv_bar_set_value(ui_Bar1, 25, LV_ANIM_OFF);
     lv_bar_set_start_value(ui_Bar1, 0, LV_ANIM_OFF);
@@ -142,8 +133,8 @@ void ui_Screen1_screen_init(void)
     lv_img_set_src(ui_WeatherPlaceholder, &ui_img_1407854121);
     lv_obj_set_width(ui_WeatherPlaceholder, LV_SIZE_CONTENT);   /// 48
     lv_obj_set_height(ui_WeatherPlaceholder, LV_SIZE_CONTENT);    /// 48
-    lv_obj_set_x(ui_WeatherPlaceholder, 72);
-    lv_obj_set_y(ui_WeatherPlaceholder, 93);
+    lv_obj_set_x(ui_WeatherPlaceholder, 75);
+    lv_obj_set_y(ui_WeatherPlaceholder, 70);
     lv_obj_set_align(ui_WeatherPlaceholder, LV_ALIGN_CENTER);
     lv_obj_add_flag(ui_WeatherPlaceholder, LV_OBJ_FLAG_ADV_HITTEST);     /// Flags
     lv_obj_clear_flag(ui_WeatherPlaceholder, LV_OBJ_FLAG_SCROLLABLE);      /// Flags

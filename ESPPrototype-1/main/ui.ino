@@ -97,12 +97,14 @@ void initUI()
     ui_init();
 
     //Turn off backlight
-    //pinMode(TFT_BL, OUTPUT);
-    //digitalWrite(TFT_BL, LOW); 
+    pinMode(TFT_BL, OUTPUT);
+    digitalWrite(TFT_BL, LOW); 
 
     //You can adjust how often the UI is updated here
-    //Default is 
+    //Default is 1 second
     lv_timer_create(updateUI, 1000, NULL); 
+    //Update time UI every 2 seconds
+    lv_timer_create(updateUI_time, 2000, NULL);
 
     Serial.println( "Setup done" );
 }

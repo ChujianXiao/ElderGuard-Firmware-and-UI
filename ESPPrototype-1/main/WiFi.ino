@@ -1,7 +1,10 @@
 #include <WiFi.h>
+extern "C" {
+  #include "esp_wifi.h"
+}
 
 // Replace with your Wi-Fi credentials
-const char* ssid = "uOttawa";
+const char* ssid = "uOttawa Trash";
 const char* password = "meiyoumima";
 
 IPAddress serverIP;
@@ -28,7 +31,10 @@ void setupWiFi() {
   if (WiFi.hostByName(server, serverIP)) {
         Serial.print("Resolved Direct Server IP: ");
         Serial.println(serverIP);
-    } else {
+  } else {
         Serial.println("[ERROR] Direct Server DNS Resolution Failed!");
-    }
+  }
+
+  //Set maximum modem sleep to save power
+  esp_wifi_set_ps(WIFI_PS_MAX_MODEM);
 }
