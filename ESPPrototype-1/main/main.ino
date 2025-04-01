@@ -114,7 +114,7 @@ void SensorTask(void *pvParameters) {
   */
 
     //Reading interval
-    vTaskDelay(500 / portTICK_PERIOD_MS);
+    vTaskDelay(1000 / portTICK_PERIOD_MS);
   }
 }
 

@@ -1,12 +1,17 @@
 #include <NTPClient.h>
 #include <time.h>
 
+//Time offset: UTC-4
+const long utcOffsetInSeconds = -4 * 3600;
+
+//Variable to detect if the time is set already
 bool timeSet = false;
+//Detect new minute to change time
 int lastMinute = -1;
 
 //NTP client setup
 WiFiUDP ntpUDP;
-NTPClient timeClient(ntpUDP, "pool.ntp.org", 0, 60000);  //UTC time, 60s update (we'll only use it once)
+NTPClient timeClient(ntpUDP, "pool.ntp.org",utcOffsetInSeconds, 60000);  //UTC-4 time, 60s update (we'll only use it once)
 
 void setSystemTime(){
   //Check if WiFi is connected first

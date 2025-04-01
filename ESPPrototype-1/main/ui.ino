@@ -97,8 +97,8 @@ void initUI()
     ui_init();
 
     //Turn off backlight
-    pinMode(TFT_BL, OUTPUT);
-    digitalWrite(TFT_BL, LOW); 
+    //pinMode(TFT_BL, OUTPUT);
+    //digitalWrite(TFT_BL, LOW); 
 
     //You can adjust how often the UI is updated here
     //Default is 1 second
@@ -190,5 +190,10 @@ void updateUI(lv_timer_t *timer)
     snprintf(buf, sizeof(buf), "N/A");
   }
   lv_label_set_text(ui_BloodOxygen, buf); // ui_BloodOxygen is defined in ui.c
+
+  //Battery update (testing voltage)
+  float voltage = readBatteryVoltage;
+  snprintf(buf, sizeof(buf), "%.2f", voltage);
+  lv_label_set_text(ui_Power, buf);
 }
 

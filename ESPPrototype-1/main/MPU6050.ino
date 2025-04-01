@@ -19,14 +19,25 @@ void initMPU6050() {
 void readMPU6050(int mpuData[2]) {
   mpu6050.update();
 
+  //Testing MPU Axes
+  Serial.print("Gyro X: "); Serial.println(mpu.getGyroX());
+  Serial.print("Gyro Y: "); Serial.println(mpu.getGyroY());
+  Serial.print("Gyro Z: "); Serial.println(mpu.getGyroZ());
+
+  //If the acceleration on the Y-axis is greater than 0.2g, we count one step
   if (abs(mpu6050.getAccY()) > 0.2) {
     steps += 1;
     delay(350); // Prevent double-counting of steps
   }
-  distance = steps * distanceinonestep / 100; // Calculate distance in meters
+  distance = steps * distanceinonestep / 100; //Calculate distance in meters
 
   mpuData[0] = steps;
   mpuData[1] = distance;
+}
+
+//For waking the screen up on wrist movement
+bool checkWristMovement(){
+  mpu6050.update();
 }
 
 void updateUI_MPU6050(lv_timer_t *timer) {
