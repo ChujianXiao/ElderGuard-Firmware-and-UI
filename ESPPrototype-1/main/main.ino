@@ -7,14 +7,20 @@
 #include <TFT_eSPI.h>
 #include <ui.h>
 
-// Task prototypes
+//For detecting when the screen needs to turn off to save power
+unsigned long screenOnTime = 0;
+const unsigned long screenTimeThreshold = 10000;
+bool screenOn = true;
+
+//Task prototypes
 void SensorTask(void *pvParameters);
 void MAX3010Task(void *pvParameters);
 void WiFiTask(void *pvParameters);
 void UITask(void *pvParameters);
 void BackendTask(void *pvParameters);
+void BackLightTask(void *pvParameters);
 
-// Declare struct to store sensor's data
+//Declare struct to store sensor's data
 typedef struct {
     float uvData[2];
     float bmp280Data[2];
@@ -23,9 +29,8 @@ typedef struct {
     int max3010Data[2];
 } SensorData;
 
-//Global variable for storing sensor data
-SensorData latestSensorData;
-SemaphoreHandle_t dataMutex; //We need a mutex for this variable as multiple tasks could be accessing at same time
+SensorData latestSensorData; //Global variable for storing sensor data
+SemaphoreHandle_t dataMutex, backLightMutex; //We need mutexes for these variables as multiple tasks could be accessing at same time
 
 char macStr[18];  // Buffer for MAC address string
 
@@ -59,6 +64,7 @@ void setup() {
 
   //Create mutexes
   dataMutex = xSemaphoreCreateMutex();
+  backLightMutex = xSemaphoreCreateMutex();
 
   //Create tasks
   //Task creation template
@@ -77,6 +83,7 @@ void setup() {
   xTaskCreate(UITask, "UI Task", 3500, NULL, 1, NULL);
   xTaskCreate(WiFiTask, "Wifi Task", 4000, NULL, 1, NULL);
   xTaskCreate(BackendTask, "Backend Task", 4500, NULL, 1, NULL);
+  xTaskCreate(BackLightTask, "BackLight Task", 2000, NULL, 1, NULL);
 }
 
 void loop() {
@@ -87,7 +94,7 @@ void loop() {
 void SensorTask(void *pvParameters) {
   for (;;) {
     SensorData data;
-    
+
     //Fetch sensor data and store it in the struct
     readUVSensor(data.uvData);
     readBMP280(data.bmp280Data);
@@ -186,6 +193,28 @@ void BackendTask(void *pvParameters) {
 
     //Run every 5000 ms
     vTaskDelay(5000 / portTICK_PERIOD_MS);
+  }
+}
+
+void BackLightTask(void *pvParameters) {
+  for (;;) {
+    if (xSemaphoreTake(backLightMutex, portMAX_DELAY)) {
+      if(screenOn && millis() - screenOnTime > screenTimeThreshold){
+        digitalWrite(TFT_BL, LOW);
+        screenOn = false;
+      }
+      xSemaphoreGive(backLightMutex);  //Release the mutex
+    }
+
+    //check how much space is left in the stack
+    /*
+    UBaseType_t stackLeft = uxTaskGetStackHighWaterMark(NULL);
+    Serial.print("BackLight task stack high water mark: ");
+    Serial.println(stackLeft);
+    */
+
+    //Run every 500 ms
+    vTaskDelay(500 / portTICK_PERIOD_MS);
   }
 }
 

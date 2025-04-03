@@ -19,11 +19,6 @@ void initMPU6050() {
 void readMPU6050(int mpuData[2]) {
   mpu6050.update();
 
-  //Testing MPU Axes
-  Serial.print("Gyro X: "); Serial.println(mpu.getGyroX());
-  Serial.print("Gyro Y: "); Serial.println(mpu.getGyroY());
-  Serial.print("Gyro Z: "); Serial.println(mpu.getGyroZ());
-
   //If the acceleration on the Y-axis is greater than 0.2g, we count one step
   if (abs(mpu6050.getAccY()) > 0.2) {
     steps += 1;
@@ -33,11 +28,27 @@ void readMPU6050(int mpuData[2]) {
 
   mpuData[0] = steps;
   mpuData[1] = distance;
-}
 
-//For waking the screen up on wrist movement
-bool checkWristMovement(){
-  mpu6050.update();
+  //If the screen is turned off, we begin checking the wrist movement
+  if(!screenOn){
+    float gyroY = mpu6050.getGyroY(); //raw reading
+
+    // Convert to degrees/second
+    float gyroY_dps = gyroY / 131.0; //131 LSB/°/s for 250 °/s
+
+    // Threshold for detecting a flick
+    float flickThreshold = 150.0;
+
+    if (xSemaphoreTake(backLightMutex, portMAX_DELAY)){
+      // Wake up the screen
+      if (!screenOn && abs(gyroY_dps) > flickThreshold){
+        digitalWrite(TFT_BL, HIGH);
+        screenOn = true;
+        screenOnTime = millis();
+      }
+      xSemaphoreGive(backLightMutex);  //Release the mutex
+    }
+  }
 }
 
 void updateUI_MPU6050(lv_timer_t *timer) {
