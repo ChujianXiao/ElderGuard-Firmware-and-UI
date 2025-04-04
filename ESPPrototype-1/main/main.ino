@@ -200,7 +200,7 @@ void BackLightTask(void *pvParameters) {
   for (;;) {
     if (xSemaphoreTake(backLightMutex, portMAX_DELAY)) {
       if(screenOn && millis() - screenOnTime > screenTimeThreshold){
-        digitalWrite(TFT_BL, LOW);
+        tft.setBrightness(0);
         screenOn = false;
       }
       xSemaphoreGive(backLightMutex);  //Release the mutex

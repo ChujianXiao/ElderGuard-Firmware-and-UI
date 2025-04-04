@@ -96,10 +96,6 @@ void initUI()
 
     ui_init();
 
-    //Set backlight pin mode
-    digitalWrite(TFT_BL, HIGH); 
-    pinMode(TFT_BL, OUTPUT);
-
     //You can adjust how often the UI is updated here
     //Default is 1 second
     lv_timer_create(updateUI, 1000, NULL); 

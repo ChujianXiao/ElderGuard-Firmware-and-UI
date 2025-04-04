@@ -42,7 +42,7 @@ void readMPU6050(int mpuData[2]) {
     if (xSemaphoreTake(backLightMutex, portMAX_DELAY)){
       // Wake up the screen
       if (!screenOn && abs(gyroY_dps) > flickThreshold){
-        digitalWrite(TFT_BL, HIGH);
+        tft.setBrightness(255);
         screenOn = true;
         screenOnTime = millis();
       }
