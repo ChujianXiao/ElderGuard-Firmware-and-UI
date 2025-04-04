@@ -103,6 +103,8 @@ void initUI()
     lv_timer_create(updateUI_time, 2000, NULL);
 
     Serial.println( "Setup done" );
+
+    digitalWrite(TFT_BL, LOW);
 }
 
 //To be done -- split updateUI into dynamic and static UI, updating each at different rates to save power
