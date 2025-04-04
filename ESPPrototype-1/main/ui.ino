@@ -104,6 +104,7 @@ void initUI()
 
     Serial.println( "Setup done" );
 
+    pinMode(TFT_BL, OUTPUT);
     digitalWrite(TFT_BL, LOW);
 }
 
