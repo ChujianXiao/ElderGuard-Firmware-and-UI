@@ -8,8 +8,8 @@
 #define TFT_SCLK 12  //Originally 18
 #define TFT_CS   10  // Chip select control pin
 #define TFT_DC    14  // Data Command control pin
-#define TFT_BL    6  //Display backlight
-#define TFT_RST   5  // Reset pin
+#define TFT_BL    5  //Display backlight
+#define TFT_RST   6  // Reset pin
 
 // Optional touch screen chip select
 //#define TOUCH_CS 5 // Chip select pin (T_CS) of touch screen

@@ -40,7 +40,7 @@ void readMPU6050(int mpuData[2]) {
       // Wake up the screen
       if (!screenOn && abs(gyroY) > flickThreshold){
         Serial.println("Time to wake up!");
-        digitalWrite(TFT_BL, HIGH);
+        //digitalWrite(TFT_BL, HIGH);
         screenOn = true;
         screenOnTime = millis();
       }

@@ -201,7 +201,7 @@ void BackLightTask(void *pvParameters) {
     if (xSemaphoreTake(backLightMutex, portMAX_DELAY)) {
       if(screenOn && millis() - screenOnTime > screenTimeThreshold){
         Serial.println("Time to sleep!");
-        digitalWrite(TFT_BL, LOW);
+        //digitalWrite(TFT_BL, LOW);
         screenOn = false;
       }
       xSemaphoreGive(backLightMutex);  //Release the mutex
