@@ -8,7 +8,7 @@ const char* ssid = "uOttawa Trash";
 const char* password = "meiyoumima";
 
 IPAddress serverIP;
-const char* server = "https://api.peakxel.net"; 
+const char* server = "http://api.peakxel.net/api/sensors"; 
 
 void setupWiFi() {
   Serial.print("Connecting to Wi-Fi: ");

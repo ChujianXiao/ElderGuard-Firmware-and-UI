@@ -2,7 +2,7 @@
 #include <HTTPClient.h>
 #include <ArduinoJson.h>
 
-const char* serverUrl = "https://api.peakxel.net";
+const char* serverUrl = "http://api.peakxel.net/api/sensors";
 
 void sendSensorData(SensorData sensorData) {
     if (WiFi.status() == WL_CONNECTED) {
