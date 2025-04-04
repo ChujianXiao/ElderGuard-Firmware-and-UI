@@ -31,10 +31,7 @@ void readMPU6050(int mpuData[2]) {
 
   //If the screen is turned off, we begin checking the wrist movement
   if(!screenOn){
-    float gyroY = mpu6050.getGyroY(); //raw reading
-
-    // Convert to degrees/second
-    float gyroY_dps = gyroY / 131.0; //131 LSB/°/s for 250 °/s
+    float gyroY = mpu6050.getGyroY();
 
     // Threshold for detecting a flick
     float flickThreshold = 150.0;

@@ -105,7 +105,7 @@ void initUI()
     Serial.println( "Setup done" );
 
     pinMode(TFT_BL, OUTPUT);
-    digitalWrite(TFT_BL, LOW);
+    digitalWrite(TFT_BL, HIGH);
 }
 
 //To be done -- split updateUI into dynamic and static UI, updating each at different rates to save power
