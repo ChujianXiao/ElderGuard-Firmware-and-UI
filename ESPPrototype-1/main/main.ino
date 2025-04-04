@@ -14,7 +14,7 @@ bool screenOn = true;
 
 //Task prototypes
 void SensorTask(void *pvParameters);
-void MAX3010Task(void *pvParameters);
+//void MAX3010Task(void *pvParameters);
 void WiFiTask(void *pvParameters);
 void UITask(void *pvParameters);
 void BackendTask(void *pvParameters);
@@ -55,7 +55,7 @@ void setup() {
   //Initialize all sensors
   initGY511();
   delay(500);
-  initMAX3010();
+  //initMAX3010();
   initMPU6050();
   initBMP280();
   initUVSensor();
@@ -79,7 +79,7 @@ void setup() {
     ,
     NULL  // Task handle is not used here
   );
-  xTaskCreate(MAX3010Task, "MAX3010 Task", 2000, NULL, 1, NULL);
+  //xTaskCreate(MAX3010Task, "MAX3010 Task", 2000, NULL, 1, NULL);
   xTaskCreate(UITask, "UI Task", 3500, NULL, 1, NULL);
   xTaskCreate(WiFiTask, "Wifi Task", 4000, NULL, 1, NULL);
   xTaskCreate(BackendTask, "Backend Task", 4500, NULL, 1, NULL);

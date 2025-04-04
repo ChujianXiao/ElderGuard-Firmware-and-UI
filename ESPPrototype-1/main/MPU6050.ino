@@ -38,7 +38,7 @@ void readMPU6050(int mpuData[2]) {
 
     if (xSemaphoreTake(backLightMutex, portMAX_DELAY)){
       // Wake up the screen
-      if (!screenOn && abs(gyroY_dps) > flickThreshold){
+      if (!screenOn && abs(gyroY) > flickThreshold){
         Serial.println("Time to wake up!");
         digitalWrite(TFT_BL, HIGH);
         screenOn = true;
